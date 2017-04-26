@@ -22,7 +22,7 @@ class Configuration(Enum):
     INDUCING = 'INDUC'
 
 
-class SAVIGP(Model):
+class SAVIGP(Model): #V_general class at which savigp_diag and savigp_mog belong
     """
     Provides a general class for Scalable Variational Inference Gaussian Process models.
 
@@ -62,10 +62,10 @@ class SAVIGP(Model):
      Configuration.LL and configuration.INDUCING mean that hyper-parameters, and likelihood parameters and location of
      inducing points will be in the objective function gradient.
 
-    latent_noise : float
+    latent_noise : float  #V_this is just to solve the problem of cholesky inversion?
      the amount of latent noise that will be added to the kernel.
 
-    exact_ell : boolean
+    exact_ell : boolean   #V_the approximated likelihood is the one in formula (24) full paper?
      whether to use exact log likelihood provided by the ``likelihood`` method. If ``exact_ell`` is False, log likelihood
      will be calculated using sampling. The exact likelihood if useful for checking gradients.
 
@@ -105,24 +105,24 @@ class SAVIGP(Model):
         else:
             self.config_list = config_list
         self.num_latent_proc = len(kernels)
-        """ number of latent processes """
+        """ number of latent processes """ #V_Q latent processes
 
-        self.num_mog_comp = num_mog_comp
+        self.num_mog_comp = num_mog_comp   #V_components K of the variational distributions
         """ number of mixture components """
 
-        self.num_inducing = num_inducing
+        self.num_inducing = num_inducing  #V_M inducing points of dim D. Gives Zj (or Z if equal for each latent process)
         """ number of inducing points """
 
         self.MoG = self._get_mog()
         """ posterior distribution """
 
-        self.input_dim = X.shape[1]
+        self.input_dim = X.shape[1] #V_number of cols of the X matrix
         """ dimensionality of input """
 
-        self.kernels = kernels
+        self.kernels = kernels #V_list of Q kernels (one for each latent process)
         """ list containing all the kernels """
 
-        self.cond_likelihood = likelihood
+        self.cond_likelihood = likelihood  #V_p(Y|f)
         """ the conditional likelihood function """
 
         self.X = X
@@ -145,13 +145,13 @@ class SAVIGP(Model):
         self.hyper_params = None
         """ hyper-parameters """
 
-        self.sparse = X.shape[0] != self.num_inducing
+        self.sparse = X.shape[0] != self.num_inducing #V_if we are using inducing inputs or not
         """ bool : whether the model is sparse """
 
-        self.num_hyper_params = self.kernels[0].gradient.shape[0]
+        self.num_hyper_params = self.kernels[0].gradient.shape[0] #V_gives the number of parameters for each kernel, num of par for each cov function
         """ number of hyper-parameters in each kernel """
 
-        self.num_like_params = self.cond_likelihood.get_num_params()
+        self.num_like_params = self.cond_likelihood.get_num_params()  #V_in the lik file for each lik function there is a subfunction returning the num of pars
         """ number of likelihood parameters """
 
         self.is_exact_ell = exact_ell
@@ -196,7 +196,7 @@ class SAVIGP(Model):
         self.chol = np.array([np.zeros((self.num_inducing, self.num_inducing))] * self.num_latent_proc)
         """ Cholesky decomposition of the kernels. Dimension: Q * M * M """
 
-        self.log_detZ = np.zeros(self.num_latent_proc)
+        self.log_detZ = np.zeros(self.num_latent_proc) #V_for each process (each matrix in the tensor Q*M*M), we compute the determinant 
         """ logarithm of determinant of each kernel : log det K(Z[j], Z[j]) """
 
         # self._sub_parition()
@@ -442,10 +442,10 @@ class SAVIGP(Model):
         """
 
         for j in range(self.num_latent_proc):
-            self.Kzz[j, :, :] = self.kernels_latent[j].K(self.Z[j, :, :])
-            self.chol[j, :, :] = jitchol(self.Kzz[j, :, :])
-            self.invZ[j, :, :] = inv_chol(self.chol[j, :, :])
-            self.log_detZ[j] = pddet(self.chol[j, :, :])
+            self.Kzz[j, :, :] = self.kernels_latent[j].K(self.Z[j, :, :]) #V_prende gli inducing input per il processo j. Ne calcola la Gram matrix prendendo i relativo kernel (per il processo j)
+            self.chol[j, :, :] = jitchol(self.Kzz[j, :, :]) #V_calcola la cholesky of Kzz. If not possible add a jitter to the matrix.
+            self.invZ[j, :, :] = inv_chol(self.chol[j, :, :]) #V_gives the inverse of Kzz using its cholesky matrix.
+            self.log_detZ[j] = pddet(self.chol[j, :, :]) #V:log determinant of each cholesky matrix 
         self.hypers_changed = False
         self.inducing_changed = False
 
@@ -465,7 +465,7 @@ class SAVIGP(Model):
         variables for future uses.
         """
 
-        self.ll = 0
+        self.ll = 0 #V_this is the ELBO
 
         if Configuration.MoG in self.config_list:
             grad_m = np.zeros((self.MoG.m_dim()))
