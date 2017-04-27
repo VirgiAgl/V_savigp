@@ -15,9 +15,9 @@ class MoG:
 
     def __init__(self, num_comp, num_process, num_dim):
         """
-        :param num_comp: number of components
-        :param num_process: number of latent processes
-        :param num_dim: dimensionality of each Gaussian.
+        :param num_comp: number of components #V_K
+        :param num_process: number of latent processes #V_Q
+        :param num_dim: dimensionality of each Gaussian. #V_M
         :return: None
         """
 
@@ -42,10 +42,10 @@ class MoG:
          parameters
         """
 
-        self.parameters = params
-        self.m_from_array(params[:self.get_m_size()])
-        self.s_from_array(params[self.get_m_size():(self.get_m_size() + self.get_s_size())])
-        self.pi_from_array(params[(self.get_m_size() + self.get_s_size()):])
+        self.parameters = params #V_params contains all the parameters but flattened 
+        self.m_from_array(params[:self.get_m_size()]) #V_from the flattened array this is just recreating the tensor for the mean
+        self.s_from_array(params[self.get_m_size():(self.get_m_size() + self.get_s_size())]) #V_from the flattened array this is just recreating the tensor for the cov
+        self.pi_from_array(params[(self.get_m_size() + self.get_s_size()):]) #V_from the flattened array this is just recreating the tensor for the weight of the MoG
         self._update()
 
     def pi_dim(self):
@@ -65,8 +65,8 @@ class MoG:
         Initializes posterior distributions using fixed numbers
         :return: None
         """
-        self.m = np.random.uniform(low=0.0, high=0.0, size=(self.num_comp, self.num_process, self.num_dim))
-        self.pi_from_array(np.random.uniform(low=1.0, high=5.0, size=self.num_comp))
+        self.m = np.random.uniform(low=0.0, high=0.0, size=(self.num_comp, self.num_process, self.num_dim)) #V_initializing the tensor for the mean of the variational distribution
+        self.pi_from_array(np.random.uniform(low=1.0, high=5.0, size=self.num_comp)) #V_this is initializing the weights for the MoG
 
     def transform_S_grad(self, g):
         r"""
@@ -217,7 +217,7 @@ class MoG:
         """ :return  S_kj a  """
         raise NotImplementedError
 
-    def _update(self):
+    def _update(self): #V_when calling update it goes in the class of MoG used and updates the relevant parameters
         """ updates internal variables of the class """
         pass
 

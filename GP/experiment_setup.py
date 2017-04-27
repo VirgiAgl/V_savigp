@@ -30,7 +30,7 @@ class ExperimentSetup:
         Xtest = d['test_X']
         Ytest = d['test_Y']
         name = 'boston'
-        kernel = ExperimentSetup.get_kernels(Xtrain.shape[1], 1, True)
+        kernel = ExperimentSetup.get_kernels(Xtrain.shape[1], 1, True) 
         # gaussian_sigma = np.var(Ytrain)/4 + 1e-4
         gaussian_sigma = 1.0
         # number of inducing points
@@ -95,21 +95,21 @@ class ExperimentSetup:
         Xtest = d['test_X']
         Ytest = d['test_Y']
         name = 'mining'
-        kernel = ExperimentSetup.get_kernels(Xtrain.shape[1], 1, False)
+        kernel = ExperimentSetup.get_kernels(Xtrain.shape[1], 1, False) #V_get a kernel for dim D in the dataset and with one latent process
 
         # number of inducing points
-        num_inducing = int(Xtrain.shape[0] * sparsify_factor)
-        num_samples = 2000
-        cond_ll = LogGaussianCox(math.log(191. / 811))
+        num_inducing = int(Xtrain.shape[0] * sparsify_factor) #V_this is giving Zj
+        num_samples = 2000 #V_number of samples used in the batch optimization?
+        cond_ll = LogGaussianCox(math.log(191. / 811)) #V_this gives the offset 
         kernel[0].variance = 1.0
         kernel[0].lengthscale = 13516.
 
         names.append(
             ModelLearn.run_model(Xtest, Xtrain, Ytest, Ytrain, cond_ll, kernel, method, name, d['id'], num_inducing,
-                                 num_samples, sparsify_factor, ['mog'], IdentityTransformation, True,
+                                 num_samples, sparsify_factor, ['mog'], IdentityTransformation, True, #V_i am optimizinf only the MOG pars
                                  config['log_level'], True, latent_noise=0.001,
                                  opt_per_iter={'mog': 15000},
-                                 max_iter=1))
+                                 max_iter=1)) #V_only one global iteration
         return names
 
 
@@ -520,6 +520,9 @@ class ExperimentSetup:
     @staticmethod
     def get_kernels(input_dim, num_latent_proc, ARD):
         return [ExtRBF(input_dim, variance=1, lengthscale=np.array((1.,)), ARD=ARD) for j in range(num_latent_proc)]
+        #V_This gives back a RBF object extended to include the function provided in the ExtRBF. 
+        #V_an RBF kernel is such that ARD = “False” the kernel is isotropic (ie. one single lengthscale parameter ell)
+        #V_otherwise there is one lengthscale parameter per dimension.
 
     @staticmethod
     def get_train_test(X, Y, n_train):

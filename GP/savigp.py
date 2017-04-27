@@ -22,7 +22,7 @@ class Configuration(Enum):
     INDUCING = 'INDUC'
 
 
-class SAVIGP(Model): #V_general class at which savigp_diag and savigp_mog belong
+class SAVIGP(Model):
     """
     Provides a general class for Scalable Variational Inference Gaussian Process models.
 
@@ -62,16 +62,16 @@ class SAVIGP(Model): #V_general class at which savigp_diag and savigp_mog belong
      Configuration.LL and configuration.INDUCING mean that hyper-parameters, and likelihood parameters and location of
      inducing points will be in the objective function gradient.
 
-    latent_noise : float  #V_this is just to solve the problem of cholesky inversion?
-     the amount of latent noise that will be added to the kernel.
+    latent_noise : float
+     the amount of latent noise that will be added to the kernel. 
 
-    exact_ell : boolean   #V_the approximated likelihood is the one in formula (24) full paper?
+    exact_ell : boolean
      whether to use exact log likelihood provided by the ``likelihood`` method. If ``exact_ell`` is False, log likelihood
      will be calculated using sampling. The exact likelihood if useful for checking gradients.
 
     inducing_on_Xs: boolean
      whether to put inducing points randomly on training data. If False, inducing points will be determined using
-     clustering.
+     clustering.  #V_pag 32 of the full paper
 
     n_threads : int
      number of threads used for calculating expected likelihood andi its gradients.
@@ -105,24 +105,24 @@ class SAVIGP(Model): #V_general class at which savigp_diag and savigp_mog belong
         else:
             self.config_list = config_list
         self.num_latent_proc = len(kernels)
-        """ number of latent processes """ #V_Q latent processes
+        """ number of latent processes """
 
-        self.num_mog_comp = num_mog_comp   #V_components K of the variational distributions
+        self.num_mog_comp = num_mog_comp
         """ number of mixture components """
 
-        self.num_inducing = num_inducing  #V_M inducing points of dim D. Gives Zj (or Z if equal for each latent process)
+        self.num_inducing = num_inducing
         """ number of inducing points """
 
         self.MoG = self._get_mog()
         """ posterior distribution """
 
-        self.input_dim = X.shape[1] #V_number of cols of the X matrix
+        self.input_dim = X.shape[1]
         """ dimensionality of input """
 
-        self.kernels = kernels #V_list of Q kernels (one for each latent process)
+        self.kernels = kernels
         """ list containing all the kernels """
 
-        self.cond_likelihood = likelihood  #V_p(Y|f)
+        self.cond_likelihood = likelihood
         """ the conditional likelihood function """
 
         self.X = X
@@ -145,13 +145,13 @@ class SAVIGP(Model): #V_general class at which savigp_diag and savigp_mog belong
         self.hyper_params = None
         """ hyper-parameters """
 
-        self.sparse = X.shape[0] != self.num_inducing #V_if we are using inducing inputs or not
+        self.sparse = X.shape[0] != self.num_inducing
         """ bool : whether the model is sparse """
 
-        self.num_hyper_params = self.kernels[0].gradient.shape[0] #V_gives the number of parameters for each kernel, num of par for each cov function
+        self.num_hyper_params = self.kernels[0].gradient.shape[0]
         """ number of hyper-parameters in each kernel """
 
-        self.num_like_params = self.cond_likelihood.get_num_params()  #V_in the lik file for each lik function there is a subfunction returning the num of pars
+        self.num_like_params = self.cond_likelihood.get_num_params()
         """ number of likelihood parameters """
 
         self.is_exact_ell = exact_ell
@@ -196,7 +196,7 @@ class SAVIGP(Model): #V_general class at which savigp_diag and savigp_mog belong
         self.chol = np.array([np.zeros((self.num_inducing, self.num_inducing))] * self.num_latent_proc)
         """ Cholesky decomposition of the kernels. Dimension: Q * M * M """
 
-        self.log_detZ = np.zeros(self.num_latent_proc) #V_for each process (each matrix in the tensor Q*M*M), we compute the determinant 
+        self.log_detZ = np.zeros(self.num_latent_proc)
         """ logarithm of determinant of each kernel : log det K(Z[j], Z[j]) """
 
         # self._sub_parition()
@@ -220,13 +220,13 @@ class SAVIGP(Model): #V_general class at which savigp_diag and savigp_mog belong
         """ gradient of evidence lower bound (ELBO) wrt to the parameters """
 
         if image:
-            self.set_all_params(image['params'])
+            self.set_all_params(image['params']) #V_if a image with the initial params is not provided, 
         else:
-            self._update_latent_kernel()
+            self._update_latent_kernel() #V_get the kernel with an added noise
 
-            self._update_inverses()
+            self._update_inverses() #V_calculate and store kernel and the inverse
 
-            self.init_mog(init_m)
+            self.init_mog(init_m) #V_initialise the mean of the MoG
 
         self.set_configuration(self.config_list)
 
@@ -255,36 +255,36 @@ class SAVIGP(Model): #V_general class at which savigp_diag and savigp_mog belong
             n_partitions = X.shape[0] / self._max_partition_size()
         else:
             n_partitions = X.shape[0] / self._max_partition_size() + 1
-        if X.shape[0] > self._max_partition_size():
-            paritions = np.array_split(np.hstack((X, Y)), n_partitions)
+        if X.shape[0] > self._max_partition_size():  #V_if I have more data than what I want to consider each time
+            paritions = np.array_split(np.hstack((X, Y)), n_partitions) #V_Split array into multiple sub-arrays of equal size.
             partition_size = self._max_partition_size()
 
             for p in paritions:
-                X_partitions.append(p[:, :X.shape[1]])
-                Y_partitions.append(p[:, X.shape[1]:X.shape[1] + Y.shape[1]])
+                X_partitions.append(p[:, :X.shape[1]])  #V_gives a list (dim = n_partitions) of array for the X data
+                Y_partitions.append(p[:, X.shape[1]:X.shape[1] + Y.shape[1]]) #V_gives a list (dim = n_partitions) of array for the Y data
         else:
-            X_partitions = ([X])
+            X_partitions = ([X]) #V_if I dont have a lot of data I can just take a list with the overal dataset as element
             Y_partitions = ([Y])
             partition_size = X.shape[0]
         return X_partitions, Y_partitions, n_partitions, partition_size
 
     def _sub_parition(self):
         self.partition_size = 50
-        inducing_index = np.random.permutation(self.X.shape[0])[:self.partition_size]
+        inducing_index = np.random.permutation(self.X.shape[0])[:self.partition_size] #V_take the first 50 rows of a random permutation of X's rows
         self.X_partitions = []
         self.Y_partitions = []
-        self.X_partitions.append(self.X[inducing_index])
+        self.X_partitions.append(self.X[inducing_index])  #V_X_partitions and Y_partition are this 50 rows corresponding to inducing_index obtained with a random perm
         self.Y_partitions.append(self.Y[inducing_index])
-        self.cached_ell = None
+        self.cached_ell = None #V_current expected log-likelihood
         self.n_partitions = 1
 
     def _max_partition_size(self):
         """
-        :return: maximum number of elements in each partition
+        :return: maximum number of elements in each partition #V_constant specified by the user
         """
         return self.max_x_partition_size
 
-    def _clust_inducing_points(self, X, Y):
+    def _clust_inducing_points(self, X, Y): #V_determines the inducing inputs by clustering
         """
         Determines the position of inducing points using k-means or mini-batch k-means clustering.
 
@@ -299,20 +299,20 @@ class SAVIGP(Model): #V_general class at which savigp_diag and savigp_mog belong
         Returns
         -------
         Z : ndarray
-         position of inducting points. Dimensions: Q * M * M
+         position of inducting points. Dimensions: Q * M * M  #V_still dont understan why is M*M. They should be in the same D dimensional space as X
 
         init_m : ndarray
           initial value for the mean of posterior distribution which is the mean of Y of data points in
           the corresponding cluster. Dimensions: M * Q
         """
 
-        Z = np.array([np.zeros((self.num_inducing, self.input_dim))] * self.num_latent_proc)
+        Z = np.array([np.zeros((self.num_inducing, self.input_dim))] * self.num_latent_proc) #V_should be of dim Q*M*D
         init_m = np.empty((self.num_inducing, self.num_latent_proc))
         np.random.seed(12000)
         if self.num_inducing == X.shape[0]:
             for j in range(self.num_latent_proc):
                 Z[j, :, :] = X.copy()
-                init_m[:, j] = Y[:, j].copy()
+                init_m[:, j] = Y[:, j].copy() #V_the mean of the f_j latent process is equal to the mean of the Y. What if P different from Q?
             for i in range(self.num_inducing):
                 init_m[i] = self.cond_likelihood.map_Y_to_f(np.array([Y[i]])).copy()
 
@@ -330,18 +330,18 @@ class SAVIGP(Model): #V_general class at which savigp_diag and savigp_mog belong
                 else:
                     init_m[zi] = self.cond_likelihood.map_Y_to_f(Y[yindx[0], :]).copy()
             for j in range(self.num_latent_proc):
-                Z[j, :, :] = centers.copy()
+                Z[j, :, :] = centers.copy() #V_get the centre of the cluster 
 
         return Z, init_m
 
-    def _random_inducing_points(self, X, Y):
+    def _random_inducing_points(self, X, Y): #V_determines the inducing points by randomly selecting them among the training points
         """
         Determines position of the inducing point by random positioning them on the training data.
 
         Returns
         -------
         Z : ndarray
-         position of inducting points. Dimensions: Q * M * M
+         position of inducting points. Dimensions: Q * M * M #V_shouldnt it be Q * M * D? 
 
         init_m : ndarray
           initial value for the mean of posterior distribution which is the Y of the training data over which the
@@ -359,7 +359,8 @@ class SAVIGP(Model): #V_general class at which savigp_diag and savigp_mog belong
                 inducing_index = np.random.permutation(X.shape[0])[:self.num_inducing]
             Z[j, :, :] = X[inducing_index].copy()
         for i in range(self.num_inducing):
-            init_m[i] = self.cond_likelihood.map_Y_to_f(np.array([Y[inducing_index[i]]])).copy()
+            init_m[i] = self.cond_likelihood.map_Y_to_f(np.array([Y[inducing_index[i]]])).copy() #V_mean by col of the matrix Y dim M*P to be considered as an initial mean for f. 
+            #V_does it mean that the prior for f is initilized at a mean different from 0?
 
         return Z, init_m
 
@@ -390,7 +391,7 @@ class SAVIGP(Model): #V_general class at which savigp_diag and savigp_mog belong
         """
         Randomly initialises the posterior distribution
         """
-        self.MoG.random_init()
+        self.MoG.random_init() #V_this is generating the initial mean and weights from the mixure of gaussians
 
     def _get_mog(self):
         """
@@ -410,13 +411,13 @@ class SAVIGP(Model): #V_general class at which savigp_diag and savigp_mog belong
                                                                 self.MoG.get_s_size() + ['pi'] * self.num_mog_comp
 
         if Configuration.HYPER in self.config_list:
-            self.param_names += ['k'] * self.num_latent_proc * self.num_hyper_params
+            self.param_names += ['k'] * self.num_latent_proc * self.num_hyper_params #V_num_hyper_params are the parameters of the kernels, I can have a different kernel for each j
 
         if Configuration.LL in self.config_list:
             self.param_names += ['ll'] * self.num_like_params
 
         if Configuration.INDUCING in self.config_list:
-            self.param_names += ['indu'] * self.num_latent_proc * self.num_inducing * self.input_dim
+            self.param_names += ['indu'] * self.num_latent_proc * self.num_inducing * self.input_dim #V_the matrix of inducing points
 
         return self.param_names
 
@@ -442,10 +443,10 @@ class SAVIGP(Model): #V_general class at which savigp_diag and savigp_mog belong
         """
 
         for j in range(self.num_latent_proc):
-            self.Kzz[j, :, :] = self.kernels_latent[j].K(self.Z[j, :, :]) #V_prende gli inducing input per il processo j. Ne calcola la Gram matrix prendendo i relativo kernel (per il processo j)
-            self.chol[j, :, :] = jitchol(self.Kzz[j, :, :]) #V_calcola la cholesky of Kzz. If not possible add a jitter to the matrix.
-            self.invZ[j, :, :] = inv_chol(self.chol[j, :, :]) #V_gives the inverse of Kzz using its cholesky matrix.
-            self.log_detZ[j] = pddet(self.chol[j, :, :]) #V:log determinant of each cholesky matrix 
+            self.Kzz[j, :, :] = self.kernels_latent[j].K(self.Z[j, :, :])
+            self.chol[j, :, :] = jitchol(self.Kzz[j, :, :]) #V_just computing the chol for Kzz in a stable way
+            self.invZ[j, :, :] = inv_chol(self.chol[j, :, :]) #V_this resurs Kzz^-1
+            self.log_detZ[j] = pddet(self.chol[j, :, :]) #V_returns the log determinant of Kzz
         self.hypers_changed = False
         self.inducing_changed = False
 
@@ -454,18 +455,18 @@ class SAVIGP(Model): #V_general class at which savigp_diag and savigp_mog belong
         :return: a matrix of dimension Q * |H|, containing hyper-parameters of all kernels.
         """
 
-        hyper_params = np.empty((self.num_latent_proc, self.num_hyper_params))
+        hyper_params = np.empty((self.num_latent_proc, self.num_hyper_params))  #V_this is storing in Q*H where H is the number of hyperp for each kernel
         for j in range(self.num_latent_proc):
             hyper_params[j] = self.kernels[j].param_array[:].copy()
         return hyper_params
 
-    def _update(self):
+    def _update(self): #V_this updates the value of the ELBO + updates the values of the gradients depending on the configuration
         """
         Updates objective function and its gradients under current configuration and stores them in the corresponding
         variables for future uses.
         """
 
-        self.ll = 0 #V_this is the ELBO
+        self.ll = 0
 
         if Configuration.MoG in self.config_list:
             grad_m = np.zeros((self.MoG.m_dim()))
@@ -479,37 +480,38 @@ class SAVIGP(Model): #V_general class at which savigp_diag and savigp_mog belong
         if Configuration.INDUCING in self.config_list:
             grad_inducing = np.zeros((self.num_latent_proc, self.num_inducing, self.input_dim))
 
-        if self.hypers_changed or self.inducing_changed:
+        if self.hypers_changed or self.inducing_changed: #V_is this just in the case I have different inducing input and different kernel for each prosses j?
             self._update_inverses()
 
-        if Configuration.ENTROPY in self.config_list or (self.cached_ent is None):
-            self.cached_ent = self._l_ent()
-            if Configuration.MoG in self.config_list:
-                grad_m += self._d_ent_d_m()
-                grad_s += self._transformed_d_ent_d_S()
-                grad_pi += self._d_ent_d_pi()
-            if Configuration.HYPER in self.config_list:
-                grad_hyper += self._dent_dhyper()
-        self.ll += self.cached_ent
+        if Configuration.ENTROPY in self.config_list or (self.cached_ent is None): #V_the entropy does not depend on the inducing inputs, dont need to take deriv wrt that
+            self.cached_ent = self._l_ent()  #V_assigning to the entropy the current value 
+            if Configuration.MoG in self.config_list:   #V_If I want to optimise the MoG pars, I will compute the deriv of the ELBO (or the terms that compose the ELBO) with respect to the MoG pars
+                grad_m += self._d_ent_d_m() #V_derivative of the entropy wrt m
+                grad_s += self._transformed_d_ent_d_S() #V_derivative of the entropy wrt s
+                grad_pi += self._d_ent_d_pi() #V_derivative of the entropy wrt p
+            if Configuration.HYPER in self.config_list: #V_If I want to optimise the Hyper pars of the kernel, I will compute the deriv of the ELBO (or the terms that compose the ELBO) with respect to the kernel hyper pars
+                grad_hyper += self._dent_dhyper() #V_derivative of the entropy wrt kernel hyper parameters
+        
+        self.ll += self.cached_ent #V_sum entropy 
 
         if Configuration.CROSS in self.config_list or (self.cached_cross is None):
             xcross, xdcorss_dpi = self._cross_dcorss_dpi(0)
-            self.cached_cross = xcross
+            self.cached_cross = xcross #V_assigning to the cross-entropy the current value 
             if Configuration.MoG in self.config_list:
-                grad_m += self._dcorss_dm()
-                grad_s += self.transform_dcorss_dS()
-                grad_pi += xdcorss_dpi
+                grad_m += self._dcorss_dm()  #V_derivative of the cross entropy wrt m
+                grad_s += self.transform_dcorss_dS() #V_derivative of the cross entropy wrt s
+                grad_pi += xdcorss_dpi #V_derivative of the cross entropy wrt pi
             if Configuration.HYPER in self.config_list:
                 grad_hyper += self._dcross_dhyper()
-            if Configuration.INDUCING in self.config_list:
+            if Configuration.INDUCING in self.config_list: #V_the cross entropy also depends on the inducing inputs,  I need the deriv of the cross-entropy wrt them
                 grad_inducing += self._dcross_dinducing()
 
-        self.ll += self.cached_cross
+        self.ll += self.cached_cross #V_sum cross entropy
 
         if Configuration.ELL in self.config_list:
             xell, xdell_dm, xdell_ds, xdell_dpi, xdell_hyper, xdell_dll, xdell_dinduc = self._ell()
             self.cached_ell = xell
-            self.ll += xell
+            self.ll += xell #V_sum log likelihood
             if Configuration.MoG in self.config_list:
                 grad_m += xdell_dm
                 grad_s += self.MoG.transform_S_grad(xdell_ds)
@@ -519,24 +521,24 @@ class SAVIGP(Model): #V_general class at which savigp_diag and savigp_mog belong
             if Configuration.INDUCING in self.config_list:
                 grad_inducing += xdell_dinduc
 
-        self.grad_ll = np.array([])
-        if Configuration.MoG in self.config_list:
+        self.grad_ll = np.array([])  #V_list of the gradients wrt to different sets of pars
+        if Configuration.MoG in self.config_list:  #V_this is putting together the gradient of the ELBO wrt to the MoG parameters
             self.grad_ll = np.hstack([grad_m.flatten(),
                                       grad_s,
                                       self.MoG.transform_pi_grad(grad_pi),
             ])
 
-        if Configuration.HYPER in self.config_list:
+        if Configuration.HYPER in self.config_list: #V_this is putting together the gradient of the ELBO wrt to the hyper parameters
             self.grad_ll = np.hstack([self.grad_ll,
                                       (grad_hyper.flatten()) * self.hyper_params.flatten()
                                       ])
 
-        if Configuration.LL in self.config_list:
+        if Configuration.LL in self.config_list: #V_this is putting together the gradient of the ELBO wrt to the lik params
             self.grad_ll = np.hstack([self.grad_ll,
                                       xdell_dll
                                       ])
 
-        if Configuration.INDUCING in self.config_list:
+        if Configuration.INDUCING in self.config_list: #V_this is putting together the gradient of the ELBO wrt to the inducing inputs
             self.grad_ll = np.hstack([self.grad_ll,
                                       grad_inducing.flatten()
                                       ])
@@ -555,7 +557,7 @@ class SAVIGP(Model): #V_general class at which savigp_diag and savigp_mog belong
         """
         Sets the internal parameters of the model.
 
-        :param p: input parameters. ``p`` should contain parameters specified in the configuration.
+        :param p: input parameters. ``p`` should contain parameters specified in the configuration. #V_p is flattened
         """
         self.last_param = p
         index = 0
@@ -641,7 +643,7 @@ class SAVIGP(Model): #V_general class at which savigp_diag and savigp_mog belong
         """
         calculates diagonal terms of K_tilda for latent process ``j`` (see paper for the definition of Ktilda)
         """
-        return self.kernels_latent[j].Kdiag(p_X) - mdiag_dot(A, K)
+        return self.kernels_latent[j].Kdiag(p_X) - mdiag_dot(A, K) #V_K is K_xz or K_zx
 
 
     def _b(self, k, j, Aj, Kzx):
@@ -668,7 +670,7 @@ class SAVIGP(Model): #V_general class at which savigp_diag and savigp_mog belong
 
         Parameters
         ----------
-        p_X : ndarray
+        p_X : ndarray #V_maybe p_X is a partition of X? P points of dimension D?
          input of dimension P * D
 
         Returns
@@ -684,12 +686,12 @@ class SAVIGP(Model): #V_general class at which savigp_diag and savigp_mog belong
         """
 
         A = np.empty((self.num_latent_proc, p_X.shape[0], self.num_inducing))
-        K = np.empty((self.num_latent_proc, p_X.shape[0]))
+        K = np.empty((self.num_latent_proc, p_X.shape[0])) #V_This is K tilda, dim P*P for each process. If Kxx is diagonal only store P values for each j
         Kzx = np.empty((self.num_latent_proc, self.num_inducing, p_X.shape[0]))
         for j in range(self.num_latent_proc):
             Kzx[j, :, :] = self.kernels_latent[j].K(self.Z[j, :, :], p_X)
             A[j] = self._A(j, Kzx[j, :, :])
-            K[j] = self._Kdiag(p_X, Kzx[j, :, :], A[j], j)
+            K[j] = self._Kdiag(p_X, Kzx[j, :, :], A[j], j) #V_calculates the diagonal terms of Ktilda. 
         return A, Kzx, K
 
     def _dell_ds(self, k, j, cond_ll, A, n_sample, sigma_kj):
@@ -868,7 +870,7 @@ class SAVIGP(Model): #V_general class at which savigp_diag and savigp_mog belong
 
         return total_ell, d_ell_dm, d_ell_ds, d_ell_dPi, d_ell_d_hyper, d_ell_d_ll, d_ell_d_induc
 
-    def _average(self, condll, X, variance_reduction):
+    def _average(self, condll, X, variance_reduction): #V_get a new gradient estimate with the same expectation but lower variance than the original estimate. 
         """
         calculates (condll * X).mean(axis=1) using variance reduction method.
 

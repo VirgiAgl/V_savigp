@@ -101,14 +101,14 @@ class ModelLearn:
         path = ModelLearn.get_output_path() + name + '/'
         check_dir_exists(path)
         file_name = 'train_'
-        header = ['Y%d,' % (j) for j in range(Ytrain.shape[1])]
+        header = ['Y%d,' % (j) for j in range(Ytrain.shape[1])]  #V_give the number of tasks (P)
         data = None
         if export_X:
             data = np.hstack((Ytrain, Xtrain))
-            header += ['X%d,' % (j) for j in range(Xtrain.shape[1])]
+            header += ['X%d,' % (j) for j in range(Xtrain.shape[1])] #V_giving the dimension D of the X
         else:
             data = Ytrain
-        np.savetxt(path + file_name + '.csv', data, header=''.join(header), delimiter=',', comments='')
+        np.savetxt(path + file_name + '.csv', data, header=''.join(header), delimiter=',', comments='') #V_quindi il file sarà Y1,Y2..,YP,X1,X2,...,XD. Matrice N*(P+D)
 
 
     @staticmethod
@@ -128,7 +128,7 @@ class ModelLearn:
         path = ModelLearn.get_output_path() + name + '/'
         check_dir_exists(path)
         file_name = 'obj_track_'
-        np.savetxt(path + file_name + '.csv', np.array([track]).T,
+        np.savetxt(path + file_name + '.csv', np.array([track]).T, #V_penso che dia una serie di valori per f
                    header='objective'
                    , delimiter=',', comments='')
 
@@ -181,7 +181,7 @@ class ModelLearn:
         Yvar_pred : ndarray
          Variance of the prediction
 
-        nlpd : ndarray
+        nlpd : ndarray #V_negative log predicted density
          NLPD of the predictions
 
         pred_names : list
@@ -204,6 +204,7 @@ class ModelLearn:
                  ['Ypred_%s_%d,' % (m, j) for m in pred_names for j in range(Ypred[0].shape[1])] + \
                  ['Yvar_pred_%s_%d,' % (m, j) for m in pred_names for j in range(Yvar_pred[0].shape[1])] + \
                  ['nlpd,'] + ['NLPD_%d,' % (j) for j in range(nlpd.shape[1] - 1)]
+        #V_thus the previous function take one 1 row for Ypred e Yvar_pred, so prediction for one point?
 
         if export_X:
             out.append(X)
@@ -400,7 +401,7 @@ class ModelLearn:
                       'll': cond_ll.__class__.__name__,
                       'opt_max_evals': opt_max_fun_evals,
                       'opt_per_iter': opt_per_iter,
-                      'xtol': xtol,
+                      'xtol': xtol, #V_to determine the convergence of the algorithm
                       'ftol': ftol,
                       'run_id': run_id,
                       'experiment': name,

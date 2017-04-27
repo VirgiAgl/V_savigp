@@ -23,22 +23,22 @@ class MoG_Diag(MoG):
 
     def __init__(self, num_comp, num_process, num_dim):
         MoG.__init__(self, num_comp, num_process, num_dim)
-        self.invC_klj_Sk = np.empty((self.num_comp, self.num_comp, self.num_process, self.num_dim))
+        self.invC_klj_Sk = np.empty((self.num_comp, self.num_comp, self.num_process, self.num_dim)) #V_four dimensions tensor
         self.s = []
         self._fixed_init()
         self._update()
         self.num_free_params = self.parameters.shape[0]
 
     def get_parameters(self):
-        return np.hstack([self.m.flatten(), self.log_s.flatten(), self.pi_untrans])
+        return np.hstack([self.m.flatten(), self.log_s.flatten(), self.pi_untrans]) #V_pi_untrans are the normalized weights
 
     def num_parameters(self):
-        return self.num_free_params
+        return self.num_free_params #V_parameters contains all the parameters but flattened so you are containg the dim of the mean, the dim of the cov and the dims of the weights
 
     def _fixed_init(self):
         MoG._fixed_init(self)
         self.s = np.random.uniform(low=0.5, high=0.5, size=(self.num_comp, self.num_process, self.num_dim))
-        self.log_s = np.log(self.s)
+        self.log_s = np.log(self.s)   #V_initialisation of the parameters. The mean is initialised in general cause is always the same, the cov is initialised in the specific MoG file cause the dim is different everytime
 
     def _random_init(self):
         MoG._random_init(self)
@@ -47,9 +47,9 @@ class MoG_Diag(MoG):
 
     def update_covariance(self, j, Sj):
         for k in range(self.num_comp):
-            self.s[k,j,:] = np.diagonal(Sj).copy()
+            self.s[k,j,:] = np.diagonal(Sj).copy() #V_replace the jth row in the tensor k*Q*M for each k component. 
             if min(self.s[k,j,:]) < 0:
-                self.s[k,j,:] = self.s[k,j,:] - 2 * min(self.s[k,j,:])
+                self.s[k,j,:] = self.s[k,j,:] - 2 * min(self.s[k,j,:]) #V_is this for numerical stability?
 
         self.log_s = np.log(self.s)
         self._update()
@@ -78,14 +78,21 @@ class MoG_Diag(MoG):
     def m_from_array(self, ma):
         self.m = ma.reshape((self.num_comp, self.num_process, self.num_dim))
 
-    def s_from_array(self, sa):
+    def s_from_array(self, sa): #V_sa is saved as the log of s
         self.s = np.exp(sa).reshape((self.num_comp, self.num_process, self.num_dim))
         self.log_s = sa.reshape((self.num_comp, self.num_process, self.num_dim))
 
     def tr_AinvS(self, L, k, j):
+        """
+        Assuming that ``L`` is the Cholesky decomposition of A
+
+        :return  trace(A^-1 s[k,j]) """
         return np.dot(np.diagonal(inv_chol(L)), self.s[k,j,:])
 
     def tr_AS(self, A, k, j):
+        """
+        :return: trace (A s[k,j])
+        """
         return np.dot(np.diagonal(A), self.s[k,j,:])
 
     def C_m(self, j, k, l):
@@ -110,12 +117,17 @@ class MoG_Diag(MoG):
         return np.diagonal(mdot(a, np.diag(self.s[k,j,:]), a.T))
 
     def mmTS(self, k, j):
+        """ :return  m_kj m_kj^T  + s_kj  """
         return mdot(self.m[k,j, np.newaxis].T, self.m[k,j, np.newaxis]) + np.diag(self.s[k,j])
 
     def dAinvS_dS(self, L, k, j):
+        """
+        Assuming ``L`` = chol (A), then this function calculates dA^{-1}s[k,j] \\ ds[k,j] and transforms the results to the
+        raw space i.e., ready for exposing to the optimiser"""
         return np.diagonal(inv_chol(L)) * self.s[k,j,:].flatten()
 
     def dAS_dS(self, S, k, j):
+        """ :return  dA^{-1}S dS  """
         return np.diagonal(S) * self.s[k,j,:].flatten()
 
     def Sa(self, a, k, j):
