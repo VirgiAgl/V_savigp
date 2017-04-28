@@ -35,6 +35,7 @@ p2 = draw_boxplot_models_with_X(data, "NLPD", "right")
 g = arrangeGrob(p1, p2, ncol=2,  widths=c(9/20, 11/20))
 ggsave(file=paste(output_path, name, ".pdf", sep = ""),  width=w, height=h, units = "cm" , device=cairo_pdf, g)      
 
+
 # abalone data
 name= 'abalone'
 data = read.csv('../../graph_data/abalone_SSE_data.csv')

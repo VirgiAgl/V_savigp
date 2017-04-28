@@ -101,14 +101,14 @@ class ModelLearn:
         path = ModelLearn.get_output_path() + name + '/'
         check_dir_exists(path)
         file_name = 'train_'
-        header = ['Y%d,' % (j) for j in range(Ytrain.shape[1])]  #V_give the number of tasks (P)
+        header = ['Y%d,' % (j) for j in range(Ytrain.shape[1])]  #V_give the number of tasks P
         data = None
         if export_X:
             data = np.hstack((Ytrain, Xtrain))
             header += ['X%d,' % (j) for j in range(Xtrain.shape[1])] #V_giving the dimension D of the X
         else:
             data = Ytrain
-        np.savetxt(path + file_name + '.csv', data, header=''.join(header), delimiter=',', comments='') #V_quindi il file sarà Y1,Y2..,YP,X1,X2,...,XD. Matrice N*(P+D)
+        np.savetxt(path + file_name + '.csv', data, header=''.join(header), delimiter=',', comments='') #V_quindi il file sara Y1 Y2 YP X1 X2 XD. Matrice N P D
 
 
     @staticmethod

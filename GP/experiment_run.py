@@ -46,7 +46,7 @@ class ExperimentRunner:
         # return [ExperimentSetup.USPS_data.__name__]
         # return [ExperimentSetup.creep_data.__name__]
         # return [ExperimentSetup.abalone_data.__name__]
-        # return [ExperimentSetup.mining_data.__name__]
+        return [ExperimentSetup.mining_data.__name__]
     #
 
     @staticmethod
@@ -69,7 +69,7 @@ class ExperimentRunner:
 
     @staticmethod
     def boston_experiment():
-        ExperimentSetup.boston_data({'method': 'mix2', 'sparse_factor': 0.8, 'run_id': 3, 'log_level': logging.DEBUG})
+        ExperimentSetup.boston_data({'method': 'full', 'sparse_factor': 0.8, 'run_id': 3, 'log_level': logging.DEBUG})
 
     @staticmethod
     def wisconsin_breast_experiment():
@@ -152,11 +152,11 @@ class ExperimentRunner:
     @staticmethod
     def plot():
         PlotOutput.plot_output_all('boston', ModelLearn.get_output_path(),
-                                   lambda x: x['method'] == 'full', False)
+                                   lambda x: x['method'] == 'full', True)
 
         # plots all the files
         # PlotOutput.plot_output_all('boston', Experiments.get_output_path(),
-        #                            None, False)
+        #                         None, False)
 
         # plots for an specific experiment
         # PlotOutput.plot_output_all('abalone_graph', Experiments.get_output_path(),
@@ -176,19 +176,19 @@ if __name__ == '__main__':
     logger = ModelLearn.get_logger(ModelLearn.get_logger_path(), 'general_' + ModelLearn.get_ID(), logging.DEBUG)
 
     # uncomment to run experiments in parallel
-    # ExperimentRunner.run_parallel(3)
+    ExperimentRunner.run_parallel(2)
 
     # runs an individual configuration
-    # ExperimentRunner.boston_experiment()
+    ExperimentRunner.boston_experiment()
     # ExperimentRunner.wisconsin_breast_experiment()
     # ExperimentRunner.USPS_experiment()
-    # ExperimentRunner.mining_experiment()
+    ExperimentRunner.mining_experiment()
     # ExperimentRunner.abalone_experiment()
     # ExperimentRunner.mnist_binary_inducing_experiment()
-    ExperimentRunner.mnist_binary_experiment()
+    # ExperimentRunner.mnist_binary_experiment()
     # ExperimentRunner.sarcos_all_joins_experiment()
     # ExperimentRunner.sarcos_experiment()
 
 
     # uncomment to plots the outputs in results folder
-    # ExperimentRunner.plot()
+    ExperimentRunner.plot()

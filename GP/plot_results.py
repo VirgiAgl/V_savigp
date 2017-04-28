@@ -215,5 +215,7 @@ class PlotOutput:
             return reader.next()
 
 if __name__ == '__main__':
-    PlotOutput.plot_output('boston', '../../results/', ['boston_full', 'boston_mix1', 'boston_mix2', 'boston_gp'], None, True)
+    #PlotOutput.plot_output('boston', '../results/', ['boston_full', 'boston_mix1', 'boston_mix2', 'boston_gp'], None, True)
+    PlotOutput.plot_output('boston', '../results/', ['boston_full'], None, True)
+    #PlotOutput.plot_output('boston', 'results/', ['boston_HU68DN'], None, True)
 
