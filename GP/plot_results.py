@@ -139,6 +139,7 @@ class PlotOutput:
                 if n in ['intensity']:
                     X = g.values()[0][:, 0]
                     true_data = DataFrame({'x': X, 'y': g.values()[0][:, 3]})
+                    check_dir_exists('../graph_data/') #V_added cause the folder graph_data does not exist
                     true_data.to_csv('../graph_data/' + name  + '_' + 'true_y' + '_data.csv')
                     plt.figure()
                     color = ['b', 'g', 'r', 'c', 'm', 'y', 'k', 'w']
@@ -216,6 +217,7 @@ class PlotOutput:
 
 if __name__ == '__main__':
     #PlotOutput.plot_output('boston', '../results/', ['boston_full', 'boston_mix1', 'boston_mix2', 'boston_gp'], None, True)
-    PlotOutput.plot_output('boston', '../results/', ['boston_full'], None, True)
+    #PlotOutput.plot_output('boston', '../results/', ['boston_full'], None, True)
+     PlotOutput.plot_output('mining', '../results/', ['mining_ZUL6BE'], None, True)
     #PlotOutput.plot_output('boston', 'results/', ['boston_HU68DN'], None, True)
 

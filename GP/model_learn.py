@@ -77,7 +77,7 @@ class ModelLearn:
         return logger
 
     @staticmethod
-    def export_train(name, Xtrain, Ytrain, export_X=False):
+    def export_train(name, Xtrain, Ytrain, export_X=True): #V_changed for the mining to true
         """
         Exports training data into a csv file
 
@@ -160,7 +160,7 @@ class ModelLearn:
 
 
     @staticmethod
-    def export_test(name, X, Ytrue, Ypred, Yvar_pred, nlpd, pred_names=[''], export_X=False):
+    def export_test(name, Xtest, Ytrue, Ypred, Yvar_pred, nlpd, pred_names=[''], export_X=True): #V_changed to true for the mining dataset
         """
         Exports test data and the predictions into a csv file
 
@@ -206,9 +206,9 @@ class ModelLearn:
                  ['nlpd,'] + ['NLPD_%d,' % (j) for j in range(nlpd.shape[1] - 1)]
         #V_thus the previous function take one 1 row for Ypred e Yvar_pred, so prediction for one point?
 
-        if export_X:
-            out.append(X)
-            header += ['X%d,' % (j) for j in range(X.shape[1])]
+        if export_X: 
+            out.append(Xtest) #V_this part is changed from X to X_test
+            header += ['X%d,' % (j) for j in range(Xtest.shape[1])] #V_this part is changed from X to X_test
 
         header = ''.join(header)
         out = np.hstack(out)

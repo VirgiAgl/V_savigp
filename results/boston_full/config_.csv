@@ -1,2 +1,0 @@
-latent_noise:,total_time,run_id,time_per_iter,ll,max_iter,total_evals,sample_num,experiment,sparsify_factor,git_branch,opt_per_iter,xtol,random_Z,git_hash,opt_max_evals,method,model_init,ftol
-0.001,50.9193229675293,1,0.07543603402596932,UnivariateGaussian,200,675,2000,boston,0,master,"{'hyp': 25, 'll': 25, 'mog': 25}",0.001,True,2d935520844ccf1f74a1a6aaf35132a56193b971,,full,,1e-05

@@ -1,19 +1,22 @@
 import logging
 from ExtRBF import ExtRBF
 from model_learn import ModelLearn
-from data_transformation import MeanTransformation
-from likelihood import UnivariateGaussian
+from data_transformation import IdentityTransformation
+from likelihood import LogGaussianCox
 from data_source import DataSource
 import numpy as np
+
+# The dataset contains 811 observations
+# 2 cols : (0,1), date
 
 # defining model type. It can be "mix1", "mix2", or "full"
 method = "full"
 
 # number of inducing points
-num_inducing = 30
+num_inducing = 80
 
 # loading data
-data = DataSource.boston_data()
+data = DataSource.mining_data()
 
 d = data[0]
 Xtrain = d['train_X']
@@ -22,10 +25,10 @@ Xtest = d['test_X']
 Ytest = d['test_Y']
 
 # is is just of name that will be used for the name of folders and files when exporting results
-name = 'boston'
+name = 'mining'
 
 # defining the likelihood function
-cond_ll = UnivariateGaussian(np.array(1.0))
+cond_ll = LogGaussianCox(np.array(1.0)) #V_the provided parameter is the offset
 
 # number of samples used for approximating the likelihood and its gradients
 num_samples = 2000
@@ -47,10 +50,10 @@ ModelLearn.run_model(Xtest,
                      num_inducing / Xtrain.shape[0],
 
                      # optimise hyper-parameters (hyp), posterior parameters (mog), and likelihood parameters (ll)
-                     ['hyp', 'mog', 'll'],
+                     ['mog'],
 
                      # Transform data before training
-                     MeanTransformation,
+                     IdentityTransformation,
 
                      # place inducting points on training data. If False, they will be places using clustering
                      True,
@@ -65,10 +68,10 @@ ModelLearn.run_model(Xtest,
                      latent_noise=0.001,
 
                      # for how many iterations each set of parameters will be optimised
-                     opt_per_iter={'mog': 25, 'hyp': 25, 'll': 25},
+                     opt_per_iter={'mog': 15000},
 
                      # total number of global optimisations
-                     max_iter=200,
+                     max_iter=1,
 
                      # number of threads
                      n_threads=1,

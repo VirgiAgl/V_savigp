@@ -1,0 +1,2 @@
+latent_noise:,total_time,run_id,time_per_iter,ll,max_iter,total_evals,sample_num,experiment,sparsify_factor,git_branch,opt_per_iter,xtol,random_Z,git_hash,opt_max_evals,method,model_init,ftol
+0.001,5.787554025650024,1,0.23150216102600096,LogGaussianCox,1,25,2000,mining,0,master,{'mog': 15000},0.001,True,67b8e479014fdd7413290f33f61972de78f924b3,,full,,1e-05

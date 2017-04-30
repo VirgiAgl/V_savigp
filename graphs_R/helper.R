@@ -25,7 +25,7 @@ draw_bar_models <- function(data, y_lab, leg_pos){
           panel.grid.major=element_blank(), 
           panel.grid.minor=element_blank(),      
           panel.border = element_blank(),
-          panel.margin = unit(.4, "lines"),
+          panel.spacing = unit(.4, "lines"),
           text=element_text(family="Arial", size=10),
           legend.key = element_blank(),
           strip.background = element_rect(colour = "white", fill = "white",
@@ -59,7 +59,7 @@ draw_bar_models_with_X <- function(data, y_lab, leg_pos){
           panel.grid.major=element_blank(), 
           panel.grid.minor=element_blank(),      
           panel.border = element_blank(),
-          panel.margin = unit(.4, "lines"),
+          panel.spacing = unit(.4, "lines"),
           text=element_text(family="Arial", size=10),
           legend.key = element_blank(),
           strip.background = element_rect(colour = "white", fill = "white",
@@ -101,7 +101,7 @@ draw_boxplot_models_with_X <- function(data, y_lab, leg_pos){
           panel.grid.major=element_blank(), 
           panel.grid.minor=element_blank(),      
           panel.border = element_blank(),
-          panel.margin = unit(.4, "lines"),
+          panel.spacing = unit(.4, "lines"),
           text=element_text(family="Arial", size=10),
           legend.key = element_blank(),
           strip.background = element_rect(colour = "white", fill = "white",
@@ -126,7 +126,7 @@ draw_intensity <- function(data, y_lab){
           axis.line = element_line(colour = "black"),
           panel.grid.minor=element_blank(),      
           panel.border = element_blank(),
-          panel.margin = unit(.4, "lines"),
+          panel.spacing = unit(.4, "lines"),
           text=element_text(family="Arial", size=10),
           legend.key = element_blank(),
           strip.background = element_rect(colour = "white", fill = "white",
@@ -135,8 +135,10 @@ draw_intensity <- function(data, y_lab){
           legend.title=element_blank(),
           axis.text.x = element_text(angle = 90, hjust = 1)
     ) +
-    facet_grid(model ~ sp)+ 
-    guides(fill = guide_legend(keywidth = 0.5, keyheight = 0.5))
+  #+
+  #  facet_grid(model ~ sp)
+  + 
+  guides(fill = guide_legend(keywidth = 0.5, keyheight = 0.5))
   p  
 }
 
@@ -155,7 +157,7 @@ draw_mining_data <- function(data){
           panel.grid.major=element_blank(), 
           panel.grid.minor=element_blank(),      
           panel.border = element_blank(),
-          panel.margin = unit(.4, "lines"),
+          panel.spacing = unit(.4, "lines"),
           text=element_text(family="Arial", size=10),
           legend.key = element_blank(),
           strip.background = element_rect(colour = "white", fill = "white",
@@ -181,7 +183,7 @@ draw_joints <- function(data){
           panel.grid.major=element_blank(), 
           panel.grid.minor=element_blank(),      
           panel.border = element_blank(),
-          panel.margin = unit(.4, "lines"),
+          panel.spacing = unit(.4, "lines"),
           text=element_text(family="Arial", size=10),
           legend.key = element_blank(),
           strip.background = element_rect(colour = "white", fill = "white",

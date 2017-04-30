@@ -41,7 +41,7 @@ class ExperimentRunner:
         """
 
         # uncomment to run desired experiment
-        return [ExperimentSetup.boston_data.__name__]
+        # return [ExperimentSetup.boston_data.__name__]
         # return [ExperimentSetup.wisconsin_breast_cancer_data.__name__]
         # return [ExperimentSetup.USPS_data.__name__]
         # return [ExperimentSetup.creep_data.__name__]
@@ -90,7 +90,7 @@ class ExperimentRunner:
 
     @staticmethod
     def mining_experiment():
-        ExperimentSetup.mining_data({'method': 'mix1', 'sparse_factor': 1.0, 'run_id': 1, 'log_level': logging.DEBUG})
+        ExperimentSetup.mining_data({'method': 'full', 'sparse_factor': 1.0, 'run_id': 1, 'log_level': logging.DEBUG})
 
     @staticmethod
     def sarcos_experiment():
@@ -151,7 +151,10 @@ class ExperimentRunner:
 
     @staticmethod
     def plot():
-        PlotOutput.plot_output_all('boston', ModelLearn.get_output_path(),
+        # PlotOutput.plot_output_all('boston', ModelLearn.get_output_path(),
+        #                           lambda x: x['method'] == 'full', True)
+
+        PlotOutput.plot_output_all('mining', ModelLearn.get_output_path(),
                                    lambda x: x['method'] == 'full', True)
 
         # plots all the files
@@ -176,10 +179,10 @@ if __name__ == '__main__':
     logger = ModelLearn.get_logger(ModelLearn.get_logger_path(), 'general_' + ModelLearn.get_ID(), logging.DEBUG)
 
     # uncomment to run experiments in parallel
-    ExperimentRunner.run_parallel(2)
+    # ExperimentRunner.run_parallel(2)
 
     # runs an individual configuration
-    ExperimentRunner.boston_experiment()
+    # ExperimentRunner.boston_experiment()
     # ExperimentRunner.wisconsin_breast_experiment()
     # ExperimentRunner.USPS_experiment()
     ExperimentRunner.mining_experiment()

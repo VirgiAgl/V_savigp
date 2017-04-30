@@ -106,7 +106,7 @@ class ExperimentSetup:
 
         names.append(
             ModelLearn.run_model(Xtest, Xtrain, Ytest, Ytrain, cond_ll, kernel, method, name, d['id'], num_inducing,
-                                 num_samples, sparsify_factor, ['mog'], IdentityTransformation, True, #V_i am optimizinf only the MOG pars
+                                 num_samples, sparsify_factor, ['mog'], IdentityTransformation, True, #V_i am optimizing only the MOG pars
                                  config['log_level'], True, latent_noise=0.001,
                                  opt_per_iter={'mog': 15000},
                                  max_iter=1)) #V_only one global iteration

@@ -1,0 +1,34 @@
+2017-04-28 12:28:07,330 - mining_ZUL6BE - INFO - experiment started for:{'latent_noise:': 0.001, 'run_id': 1, 'll': 'LogGaussianCox', 'max_iter': 1, 'sample_num': 2000, 'experiment': 'mining', 'sparsify_factor': 0, 'git_branch': 'master', 'opt_per_iter': {'mog': 15000}, 'xtol': 0.001, 'random_Z': True, 'git_hash': '67b8e479014fdd7413290f33f61972de78f924b3', 'opt_max_evals': None, 'method': 'full', 'model_init': None, 'ftol': 1e-05}
+2017-04-28 12:28:07,690 - mining_ZUL6BE - INFO - iter started 0
+2017-04-28 12:28:07,690 - mining_ZUL6BE - INFO - MoG params
+2017-04-28 12:28:07,925 - mining_ZUL6BE - DEBUG - objective:3518.5691
+2017-04-28 12:28:08,171 - mining_ZUL6BE - DEBUG - objective:3447.0150
+2017-04-28 12:28:08,387 - mining_ZUL6BE - DEBUG - objective:3322.0130
+2017-04-28 12:28:08,641 - mining_ZUL6BE - DEBUG - objective:3249.9811
+2017-04-28 12:28:08,851 - mining_ZUL6BE - DEBUG - objective:3223.4075
+2017-04-28 12:28:09,061 - mining_ZUL6BE - DEBUG - objective:3219.8157
+2017-04-28 12:28:09,304 - mining_ZUL6BE - DEBUG - objective:3219.5990
+2017-04-28 12:28:09,504 - mining_ZUL6BE - DEBUG - objective:3219.5489
+2017-04-28 12:28:09,738 - mining_ZUL6BE - DEBUG - objective:3219.5353
+2017-04-28 12:28:09,968 - mining_ZUL6BE - DEBUG - objective:3219.5334
+2017-04-28 12:28:10,210 - mining_ZUL6BE - DEBUG - objective:3219.5336
+2017-04-28 12:28:10,406 - mining_ZUL6BE - DEBUG - objective:3219.5334
+2017-04-28 12:28:10,652 - mining_ZUL6BE - DEBUG - objective:3219.5334
+2017-04-28 12:28:10,870 - mining_ZUL6BE - DEBUG - objective:3219.5334
+2017-04-28 12:28:11,065 - mining_ZUL6BE - DEBUG - objective:3219.5334
+2017-04-28 12:28:11,309 - mining_ZUL6BE - DEBUG - objective:3219.5334
+2017-04-28 12:28:11,505 - mining_ZUL6BE - DEBUG - objective:3219.5334
+2017-04-28 12:28:11,708 - mining_ZUL6BE - DEBUG - objective:3219.5334
+2017-04-28 12:28:11,938 - mining_ZUL6BE - DEBUG - objective:3219.5334
+2017-04-28 12:28:12,146 - mining_ZUL6BE - DEBUG - objective:3219.5334
+2017-04-28 12:28:12,375 - mining_ZUL6BE - DEBUG - objective:3219.5334
+2017-04-28 12:28:12,579 - mining_ZUL6BE - DEBUG - objective:3219.5334
+2017-04-28 12:28:12,812 - mining_ZUL6BE - DEBUG - objective:3219.5334
+2017-04-28 12:28:13,062 - mining_ZUL6BE - DEBUG - objective:3219.5334
+2017-04-28 12:28:13,266 - mining_ZUL6BE - DEBUG - objective:3219.5334
+2017-04-28 12:28:13,470 - mining_ZUL6BE - DEBUG - objective:3219.5334
+2017-04-28 12:28:13,471 - mining_ZUL6BE - DEBUG - objective:3219.5334
+2017-04-28 12:28:13,471 - mining_ZUL6BE - INFO - callback...
+2017-04-28 12:28:13,478 - mining_ZUL6BE - INFO - callback finished
+2017-04-28 12:28:13,478 - mining_ZUL6BE - DEBUG - prediction started...
+2017-04-28 12:28:13,510 - mining_ZUL6BE - DEBUG - prediction finished
