@@ -24,6 +24,7 @@ Ytrain = d['train_Y']
 Xtest = d['test_X']
 Ytest = d['test_Y']
 
+
 # is is just of name that will be used for the name of folders and files when exporting results
 name = 'mining'
 
